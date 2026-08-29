@@ -43,7 +43,7 @@ fn main() {
         build_ui(app, &title_clone, start_hidden_clone);
     });
 
-    app.run();
+    app.run_with_args(&[args[0].as_str()]);
 }
 
 fn build_ui(app: &Application, title_text: &str, start_hidden: bool) {
