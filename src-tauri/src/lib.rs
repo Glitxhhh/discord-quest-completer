@@ -40,41 +40,44 @@ fn bundle_binary_name(app_name: &str) -> String {
         .to_string()
 }
 
-fn game_folder_path(exe_dir: &Path, path: &str, app_id: i64) -> PathBuf {
+fn get_base_games_dir() -> PathBuf {
+    #[cfg(target_os = "windows")]
+    {
+        let exe_path: std::path::PathBuf = env::current_exe().unwrap_or_default();
+        let exe_dir = exe_path.parent().unwrap_or_else(|| Path::new(""));
+        exe_dir.join("games")
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    {
+        if let Some(home) = env::var_os("HOME") {
+            return PathBuf::from(home).join(".local/share/discord-quest-completer/games");
+        }
+        PathBuf::from("/tmp/discord-quest-completer/games")
+    }
+}
+
+fn game_folder_path(_exe_dir: &Path, path: &str, app_id: i64) -> PathBuf {
     let normalized_path = Path::new(path).to_string_lossy().to_string();
 
-    exe_dir
-        .join("games")
+    get_base_games_dir()
         .join(app_id.to_string())
         .join(normalized_path)
 }
 
 fn resolve_runner_template(handle: &AppHandle) -> Result<PathBuf, String> {
-    let resource_path = handle
-        .path()
-        .resolve(runner_resource_name(), BaseDirectory::Resource)
-        .map_err(|e| format!("Failed to resolve runner template: {}", e))?;
-
-    if resource_path.exists() {
-        return Ok(resource_path);
-    }
-
-    #[cfg(target_os = "linux")]
-    {
-        let fallback_path = handle
-            .path()
-            .resolve("resources/src-linux", BaseDirectory::Resource)
-            .map_err(|e| format!("Failed to resolve Linux runner template: {}", e))?;
-
-        if fallback_path.exists() {
-            return Ok(fallback_path);
+    if let Ok(p) = handle.path().resolve(runner_resource_name(), BaseDirectory::Resource) {
+        if p.exists() {
+            return Ok(p);
         }
     }
-
-    Err(format!(
-        "Runner template not found at {}",
-        resource_path.display()
-    ))
+    let stripped = runner_resource_name().strip_prefix("data/").unwrap_or(runner_resource_name());
+    if let Ok(p) = handle.path().resolve(stripped, BaseDirectory::Resource) {
+        if p.exists() {
+            return Ok(p);
+        }
+    }
+    Err("Failed to resolve runner template".to_string())
 }
 
 fn make_macos_app_bundle(
