@@ -217,9 +217,20 @@ jobs:
           name: release-bundles-${{ env.version }}
           path: |
             ./build/*.zip
-            tauri-win-release/bundle/**/*
-            tauri-linux-release/bundle/**/*
-            tauri-macos-release/bundle/**/*
+            tauri-win-release/bundle/nsis/*.exe
+            tauri-win-release/bundle/msi/*.msi
+            tauri-linux-release/bundle/appimage/*.AppImage
+            tauri-linux-release/bundle/deb/*.deb
+            tauri-linux-release/bundle/rpm/*.rpm
+            tauri-macos-release/bundle/dmg/*.dmg
+            tauri-macos-release/bundle/macos/*.app.tar.gz
+
+      - name: Delete stale release for this tag, if any
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          version: ${{ env.version }}
+        run: |
+          gh release delete "${{ env.version }}" --repo "${{ github.repository }}" --yes --cleanup-tag || true
 
       - name: Create and Upload Release
         id: create_release
@@ -240,9 +251,13 @@ jobs:
             ./build/${{ env.win_build_release_dir }}.zip
             ./build/${{ env.linux_build_release_dir }}.zip
             ./build/${{ env.macos_build_release_dir }}.zip
-            tauri-win-release/bundle/**/*
-            tauri-linux-release/bundle/**/*
-            tauri-macos-release/bundle/**/*
+            tauri-win-release/bundle/nsis/*.exe
+            tauri-win-release/bundle/msi/*.msi
+            tauri-linux-release/bundle/appimage/*.AppImage
+            tauri-linux-release/bundle/deb/*.deb
+            tauri-linux-release/bundle/rpm/*.rpm
+            tauri-macos-release/bundle/dmg/*.dmg
+            tauri-macos-release/bundle/macos/*.app.tar.gz
           prerelease: true
           draft: true
         env:
