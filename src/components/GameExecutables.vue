@@ -7,6 +7,12 @@
         <h3 v-if="filteredExecutables.length > 0">
             Select an executable to launch:
         </h3>
+        <h3 v-else-if="filteredExecutables.length === 1">
+            Select the executable to launch:
+        </h3>
+        <h3 v-else>
+            No compatible executables found for this platform.
+        </h3>
 
         <p v-if="usingCrossPlatformFallback" class="text-xs mt-2 text-amber-600 dark:text-amber-400">
             No macOS executable is registered for this game. Using the Windows executable name as a fallback.
