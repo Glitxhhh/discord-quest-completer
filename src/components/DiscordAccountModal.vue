@@ -53,7 +53,7 @@
 
             <div v-else class="flex flex-col gap-2.5">
               <p class="text-xs text-gray-600 dark:text-gray-300">
-                Tự động đồng bộ tài khoản và danh sách Quest từ phần mềm <strong>Discord Desktop App</strong> đang mở trên máy tính của bạn.
+                Automatically sync your account and Quest list from the <strong>Discord Desktop App</strong> running on your computer.
               </p>
 
               <button
@@ -63,7 +63,7 @@
               >
                 <span v-if="isLoading" class="animate-spin">🌀</span>
                 <span class="text-base">⚡</span>
-                <span>{{ isLoading ? 'Đang nhận diện tài khoản...' : 'Đồng bộ từ Discord Desktop App' }}</span>
+                <span>{{ isLoading ? 'Detecting account...' : 'Sync from Discord Desktop App' }}</span>
               </button>
 
               <div class="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700/50">
@@ -71,20 +71,20 @@
                   @click="showManualInput = !showManualInput" 
                   class="text-[11px] text-[#5865F2] hover:underline font-semibold cursor-pointer"
                 >
-                  {{ showManualInput ? 'Ẩn nhập thủ công' : 'Nhập token thủ công' }}
+                  {{ showManualInput ? 'Hide manual entry' : 'Enter token manually' }}
                 </button>
                 <div v-if="showManualInput" class="mt-2 flex gap-1.5">
-                  <input 
-                    v-model="manualToken" 
-                    type="password" 
-                    placeholder="Nhập Discord Token vào đây..." 
+                  <input
+                    v-model="manualToken"
+                    type="password"
+                    placeholder="Enter your Discord token here..."
                     class="flex-1 text-xs px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-indigo-500"
                   />
-                  <button 
+                  <button
                     @click="submitManualToken"
                     class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg font-bold cursor-pointer"
                   >
-                    Lưu
+                    Save
                   </button>
                 </div>
               </div>
@@ -98,7 +98,7 @@
 
           <!-- Info Sync text -->
           <div v-if="token && userProfile && quests.length > 0" class="mt-4 text-xs text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 p-2.5 rounded-lg border border-emerald-500/20 text-center">
-            Đã thêm {{ activeUnfinishedQuests.length }} games tương ứng vào danh sách.
+            Added {{ activeUnfinishedQuests.length }} matching games to the list.
           </div>
         </div>
 
@@ -108,7 +108,7 @@
             @click="close"
             class="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm font-medium rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
           >
-            Đóng
+            Close
           </button>
         </div>
       </div>

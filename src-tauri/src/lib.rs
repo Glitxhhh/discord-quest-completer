@@ -796,7 +796,7 @@ fn scan_dir_for_tokens(dir: &Path, master_key: Option<&[u8]>, candidates: &mut V
                 }
             }
         }
-        // Sắp xếp file theo thời gian chỉnh sửa giảm dần (file mới nhất xử lý trước)
+        // Sort files by modified time descending (most recent processed first)
         files.sort_by(|a, b| b.0.cmp(&a.0));
 
         let mut encrypted_tokens = Vec::new();
@@ -809,7 +809,7 @@ fn scan_dir_for_tokens(dir: &Path, master_key: Option<&[u8]>, candidates: &mut V
             }
         }
 
-        // Ưu tiên 100% token mã hóa DPAPI của tài khoản active hiện tại trước!
+        // Prioritize DPAPI-encrypted tokens from the current active account first!
         for t in encrypted_tokens {
             if !candidates.contains(&t) {
                 candidates.push(t);
@@ -871,7 +871,7 @@ async fn auto_detect_discord_token() -> Result<String, String> {
         }
     }
 
-    Err("Không tìm thấy tài khoản Discord đang hoạt động trên máy tính.".to_string())
+    Err("No active Discord account was found on this computer.".to_string())
 }
 
 #[tauri::command(rename_all = "snake_case")]

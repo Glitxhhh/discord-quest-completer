@@ -594,7 +594,7 @@ async function trackAndProgressSequence() {
             await playCurrentSequenceGame();
         } else {
             addLog('info', '🏆 All active quests completed successfully!');
-            sendSystemNotification('Discord Quest Completer', '🎉 Chúc mừng! Đã hoàn thành toàn bộ game quest trong danh sách!');
+            sendSystemNotification('Discord Quest Completer', '🎉 Congratulations! You\'ve completed every game quest in the list!');
             stopAutoSequence();
         }
     } else {
@@ -850,7 +850,7 @@ provide<GameActionsProvider>(GameActionsKey, {
                         ]"
                     >
                         <span class="text-[10px]">{{ isAutoSequenceRunning ? '⏸' : '▶' }}</span>
-                        <span>{{ isAutoSequenceRunning ? 'Tạm dừng tự động' : 'Tự động thực hiện' }}</span>
+                        <span>{{ isAutoSequenceRunning ? 'Pause auto-play' : 'Auto-play' }}</span>
                     </button>
                 </div>
                 <div v-if="gameList.length === 0" class="text-gray-500 dark:text-gray-400 text-center py-8">
@@ -883,12 +883,12 @@ provide<GameActionsProvider>(GameActionsKey, {
                             </button>
                         </div>
                         
-                        <!-- Thanh tiến trình Quest -->
+                        <!-- Quest progress bar -->
                         <div class="mt-2.5">
                             <div class="flex justify-between items-center text-[10px] text-gray-500 dark:text-gray-400 mb-1">
                                 <span class="flex items-center gap-1">
                                     <span v-if="game.is_running" class="inline-block w-1.5 h-1.5 bg-emerald-500 rounded-full animate-ping"></span>
-                                    <span>{{ game.is_running ? 'Đang chạy tự động' : 'Chưa chạy' }}</span>
+                                    <span>{{ game.is_running ? 'Running' : 'Not running' }}</span>
                                 </span>
                                 <span class="font-bold text-indigo-600 dark:text-indigo-400">{{ getGameQuestProgress(game.id) }}%</span>
                             </div>

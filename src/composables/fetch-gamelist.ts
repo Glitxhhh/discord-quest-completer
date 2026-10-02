@@ -6,6 +6,31 @@ import { message } from '@tauri-apps/plugin-dialog';
 import { invoke } from '@tauri-apps/api/core';
 import { useGlobalState } from './app-state';
 
+// Discord sometimes adds a game to its detectable-applications list before it
+// gets around to registering real executable names for it (the API returns
+// `executables: []`). When we know the real name, override it here by
+// Discord application id so the right dummy exe gets created regardless of
+// where the game list came from (Discord API, GitHub mirror, or bundled) -
+// relying on the generic fallback-name generator alone would produce a wrong
+// name like "EASportsFC27.exe" instead of the real "fc27.exe".
+const KNOWN_EXECUTABLE_OVERRIDES: Record<string, Game['executables']> = {
+    // EA Sports FC 27
+    '1531874756096295054': [
+        { is_launcher: false, name: 'ea sports fc 27/fc27.exe', os: 'win32' },
+        { is_launcher: false, name: 'ea sports fc 27/fc27_trial.exe', os: 'win32' },
+    ],
+};
+
+function applyKnownExecutableOverrides(games: Game[]): Game[] {
+    return games.map(game => {
+        const override = KNOWN_EXECUTABLE_OVERRIDES[game.id];
+        if (override && (!game.executables || game.executables.length === 0)) {
+            return { ...game, executables: override };
+        }
+        return game;
+    });
+}
+
 export function useFetchGameList() {
     const { addLog } = useGlobalState();
     async function fetchGameListGHMirror() {
@@ -119,15 +144,15 @@ export function useFetchGameList() {
 
         // Priority: Discord API > GitHub Mirror > Bundled
         if (gameListFromDiscord.value && gameListFromDiscord.value?.length > 0 && isValidGameList(gameListFromDiscord.value)) {
-            gameDB.value = gameListFromDiscord.value as Game[] || [];
+            gameDB.value = applyKnownExecutableOverrides(gameListFromDiscord.value as Game[] || []);
             addLog('Using game list from Discord API. ' + gameListFromDiscord.value.length + ' entries.');
         } else if (gameListGHMirror.value && gameListGHMirror.value?.length > 0 && isValidGameList(gameListGHMirror.value)) {
-            gameDB.value = gameListGHMirror.value as Game[] || [];
+            gameDB.value = applyKnownExecutableOverrides(gameListGHMirror.value as Game[] || []);
             addLog('Using game list from GitHub mirror. ' + gameListGHMirror.value.length + ' entries.');
         } else {
             // bundled is always present.
             addLog('Using bundled game list as fallback. ' + bundledGameList.value.length + ' entries.');
-            gameDB.value = bundledGameList.value;
+            gameDB.value = applyKnownExecutableOverrides(bundledGameList.value as Game[]);
         }
 
         // Set a timeout to delay setting allFetchDone to true, to allow UI to update.
