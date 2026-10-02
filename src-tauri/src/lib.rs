@@ -50,10 +50,31 @@ fn game_folder_path(exe_dir: &Path, path: &str, app_id: i64) -> PathBuf {
 }
 
 fn resolve_runner_template(handle: &AppHandle) -> Result<PathBuf, String> {
-    handle
+    let resource_path = handle
         .path()
         .resolve(runner_resource_name(), BaseDirectory::Resource)
-        .map_err(|e| format!("Failed to resolve runner template: {}", e))
+        .map_err(|e| format!("Failed to resolve runner template: {}", e))?;
+
+    if resource_path.exists() {
+        return Ok(resource_path);
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        let fallback_path = handle
+            .path()
+            .resolve("resources/src-linux", BaseDirectory::Resource)
+            .map_err(|e| format!("Failed to resolve Linux runner template: {}", e))?;
+
+        if fallback_path.exists() {
+            return Ok(fallback_path);
+        }
+    }
+
+    Err(format!(
+        "Runner template not found at {}",
+        resource_path.display()
+    ))
 }
 
 fn make_macos_app_bundle(
