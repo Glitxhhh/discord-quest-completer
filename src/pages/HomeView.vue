@@ -125,12 +125,34 @@ function openSearchResults() {
     searchResultsIsOpen.value = true;
 }
 
+// Discord sometimes publishes a game (e.g. newly released titles) before it has
+// registered any launchable executables for it. Generate a plausible fallback
+// name from the game's title so quest tracking still has something to launch,
+// e.g. "EA Sports FC 27" -> "EASportsFC27.exe"
+function generateFallbackExecutable(game: Game): GameExecutable {
+    const sanitized = game.name
+        .replace(/[^a-zA-Z0-9\s]/g, '')
+        .split(/\s+/)
+        .filter(Boolean)
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join('');
+    return {
+        name: `${sanitized}.exe`,
+        os: 'win32',
+        is_launcher: false,
+    };
+}
+
 // Function to add a game to the selected list
 function addGameToList(game: Game) {
     if (!gameList.value.some(g => g.id === game.id)) {
+        const executables = (!game.executables || game.executables.length === 0)
+            ? [generateFallbackExecutable(game)]
+            : game.executables;
         gameList.value.push({
             uid: randomString(),
-            ...game
+            ...game,
+            executables,
         });
     }
 
