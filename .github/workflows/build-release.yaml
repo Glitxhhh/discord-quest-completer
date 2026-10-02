@@ -181,7 +181,7 @@ jobs:
           mkdir -p ./build/${{ env.win_build_release_dir }}
           cp tauri-win-release/discord-quest-completer.exe ./build/${{ env.win_build_release_dir }}/
           cp -r tauri-win-release/data/ ./build/${{ env.win_build_release_dir }}/
-          cp -r tauri-win-release/resources/ ./build/${{ env.win_build_release_dir }}/
+          [ -d tauri-win-release/resources/ ] && cp -r tauri-win-release/resources/ ./build/${{ env.win_build_release_dir }}/ || true
           zip -r ./build/${{ env.win_build_release_dir }}.zip ./build/${{ env.win_build_release_dir }}
           echo "win_build_release_dir=${{ env.win_build_release_dir }}" >> $GITHUB_ENV
 
@@ -194,7 +194,7 @@ jobs:
           cp tauri-linux-release/discord-quest-completer ./build/${{ env.linux_build_release_dir }}/
           chmod +x ./build/${{ env.linux_build_release_dir }}/discord-quest-completer
           cp -r tauri-linux-release/data/ ./build/${{ env.linux_build_release_dir }}/
-          cp -r tauri-linux-release/resources/ ./build/${{ env.linux_build_release_dir }}/
+          [ -d tauri-linux-release/resources/ ] && cp -r tauri-linux-release/resources/ ./build/${{ env.linux_build_release_dir }}/ || true
           zip -r ./build/${{ env.linux_build_release_dir }}.zip ./build/${{ env.linux_build_release_dir }}
           echo "linux_build_release_dir=${{ env.linux_build_release_dir }}" >> $GITHUB_ENV
 
@@ -207,7 +207,7 @@ jobs:
           cp tauri-macos-release/discord-quest-completer ./build/${{ env.macos_build_release_dir }}/
           chmod +x ./build/${{ env.macos_build_release_dir }}/discord-quest-completer
           cp -r tauri-macos-release/data/ ./build/${{ env.macos_build_release_dir }}/
-          cp -r tauri-macos-release/resources/ ./build/${{ env.macos_build_release_dir }}/
+          [ -d tauri-macos-release/resources/ ] && cp -r tauri-macos-release/resources/ ./build/${{ env.macos_build_release_dir }}/ || true
           zip -r ./build/${{ env.macos_build_release_dir }}.zip ./build/${{ env.macos_build_release_dir }}
           echo "macos_build_release_dir=${{ env.macos_build_release_dir }}" >> $GITHUB_ENV
 
